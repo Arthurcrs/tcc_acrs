@@ -1,0 +1,10 @@
+DateTime	2021-04-15T22:44:49
+ReadFiles	fake_reads.fq
+Reference	/Users/claudio/Desktop/IC/fasta/assembly-snippy/GCF_008704095.1_ASM870409v1_genomic.gbff
+ReferenceSize	5999592
+Software	snippy 4.6.0
+Variant-COMPLEX	817
+Variant-DEL	58
+Variant-INS	44
+Variant-SNP	6672
+VariantTotal	7591
