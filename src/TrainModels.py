@@ -157,7 +157,10 @@ class PredictPRinKP:
             dataset = [self.dict_dataframes['df_full_' + dataset_name]]
             metadata = [self.dict_dataframes['pbr_res_' + dataset_name]]
 
-            self.perform_feature_selection(dataset, metadata, dataset_name=dataset_name)
+            if self.fs_method != None:
+                self.perform_feature_selection(dataset, metadata, dataset_name=dataset_name)
+            else:
+                print("---- No Feature Selection ----")
 
             if "KNN" in self.train_models or "all" in self.train_models:
                 self.train_KNN(dataset, metadata, dataset_name)
@@ -243,10 +246,10 @@ class PredictPRinKP:
             if self.fs_estimator == "SVC": 
                 print("Estimator: Suport Vector Classifier")    
                 estimator = SVC(kernel='linear', random_state=self.SEED)
-            elif self.fs_estimator == "Logistic Regression":
+            elif self.fs_estimator == "LR":
                 print("Estimator: Logistic Regression")
                 estimator = LogisticRegression(random_state=self.SEED, max_iter=10000)
-            elif self.fs_estimator == "Random Forest Classifier":
+            elif self.fs_estimator == "RFC":
                 print("Estimator: Random Forest Classifier")
                 estimator = RandomForestClassifier(random_state=self.SEED)
             
