@@ -176,8 +176,8 @@ class PredictPRinKP:
                 self.train_GBTC(dataset, metadata, dataset_name)
             if "XGB" in self.train_models or "all" in self.train_models:
                 self.perform_XGB(dataset, metadata, dataset_name)
-            if "MLPClassifier" in self.train_models or "all" in self.train_models:
-                self.train_MLPC(dataset,metadata,dataset_name)
+            # if "MLPClassifier" in self.train_models or "all" in self.train_models:
+            #     self.train_MLPC(dataset,metadata,dataset_name)
 
             for model in self.models:
                 self.save_trained_models(dataset_name, self.models[model], model)
