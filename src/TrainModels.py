@@ -193,7 +193,7 @@ class PredictPRinKP:
         for dataset_name in self.datasets_gwas:
             print('----------------Training {}----------------'.format(dataset_name))
             dataset = [self.dict_dataframes['df_full_' + dataset_name],
-                       self.dict_dataframes['df_gwas_' + i]]
+                       self.dict_dataframes['df_gwas_' + dataset_name]]
             metadata = [self.dict_dataframes['pbr_res_' + dataset_name]]
 
             self.perform_feature_selection(dataset, metadata, dataset_name, gwas=True)
