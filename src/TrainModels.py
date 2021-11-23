@@ -196,7 +196,10 @@ class PredictPRinKP:
                        self.dict_dataframes['df_gwas_' + dataset_name]]
             metadata = [self.dict_dataframes['pbr_res_' + dataset_name]]
 
-            self.perform_feature_selection(dataset, metadata, dataset_name, gwas=True)
+            if self.fs_method != None:
+                self.perform_feature_selection(dataset, metadata, dataset_name=dataset_name)
+            else:
+                print("---- No Feature Selection ----")
 
             if "KNN" in self.train_models or "all" in self.train_models :
                 self.train_KNN(dataset, metadata, dataset_name)
