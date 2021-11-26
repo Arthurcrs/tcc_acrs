@@ -262,8 +262,14 @@ class PredictPRinKP:
 
         if self.fs_method == "Select From Model" :
             print("Method: Select From Model")
+
+            encoder = LabelEncoder()
+            isolate_column = dataset[0].columns[0]
+            dataset[0][isolate_column] = encoder.fit_transform(dataset[0]
+                                                            [isolate_column])
+            
             X_train, X_test, y_train, y_test = \
-            train_test_split(X,y,test_size=0.25, random_state=self.SEED,
+            train_test_split(dataset[0].values,metadata[0].values.ravel(),test_size=0.25, random_state=self.SEED,
                              stratify=metadata[0].values.ravel())
             
             if self.fs_estimator == "SVC": 
@@ -277,22 +283,9 @@ class PredictPRinKP:
                 estimator = RandomForestClassifier(random_state=self.SEED)
 
             selector = SelectFromModel(estimator)
-            selector.fit(X_train, y_train)
+            selector.fit(dataset[0].values, metadata[0].values.ravel())
             selected_features= dataset[0].columns[(selector.get_support())]
             dataset[0] = dataset[0].filter(selected_features)
-
-        if self.fs_method == "Sequential Feature Selection" :
-            print("Method: Sequential Feature Selection with Random Forest")
-            X = dataset[0].values
-            y = metadata[0].values.ravel()
-            X_train, X_test, y_train, y_test = \
-            train_test_split(X, y,
-                             test_size=0.25, random_state=self.SEED,
-                             stratify=metadata[0].values.ravel())
-            model = RandomForestClassifier(n_estimators = 1000)
-            selector = SequentialFeatureSelector(model)
-            selector.fit(X_train, y_train)
-            selected_features= dataset[0].columns[(selector.get_support())]
 
         print("---- Completed feature selection ----")
         print('Number of features selected:', len(selected_features))
