@@ -157,10 +157,7 @@ class PredictPRinKP:
             dataset = [self.dict_dataframes['df_full_' + dataset_name]]
             metadata = [self.dict_dataframes['pbr_res_' + dataset_name]]
 
-            if self.fs_method != None:
-                self.perform_feature_selection(dataset, metadata, dataset_name=dataset_name)
-            else:
-                print("---- No Feature Selection ----")
+            self.perform_feature_selection(dataset, metadata, dataset_name=dataset_name)
 
             if "KNN" in self.train_models or "all" in self.train_models:
                 self.train_KNN(dataset, metadata, dataset_name)
@@ -196,10 +193,7 @@ class PredictPRinKP:
                        self.dict_dataframes['df_gwas_' + dataset_name]]
             metadata = [self.dict_dataframes['pbr_res_' + dataset_name]]
 
-            if self.fs_method != None:
-                self.perform_feature_selection(dataset, metadata, dataset_name=dataset_name)
-            else:
-                print("---- No Feature Selection ----")
+            self.perform_feature_selection(dataset, metadata, dataset_name=dataset_name)
 
             if "KNN" in self.train_models or "all" in self.train_models :
                 self.train_KNN(dataset, metadata, dataset_name)
@@ -226,7 +220,7 @@ class PredictPRinKP:
         return self
         
     def perform_feature_selection(self, dataset, metadata, dataset_name, gwas=False):
-        print("---- Performing Feature Selection ----")
+        
         if gwas is True:
             gwas_feature_extractor = \
                 GwasFeatureExtractor(x_locus_tags=dataset[1]['LOCUS_TAG'],
@@ -234,18 +228,21 @@ class PredictPRinKP:
             gwas_feature_extractor.fit()
             dataset[0] = gwas_feature_extractor.transform(dataset[0])
             n_features = 100
+
+        encoder = LabelEncoder()
+        isolate_column = dataset[0].columns[0]
+        dataset[0][isolate_column] = encoder.fit_transform(dataset[0][isolate_column])
         
-        X = dataset[0].values
-        y = metadata[0].values.ravel()
+        if self.fs_method != None :
+            print("---- Performing Feature Selection ----")
+        else:
+            print("---- No Feature Selection ----")
+            return                                                     
 
         if self.fs_method == "RFE" :
             print("Method: Recursive Feature Selection with CV")
             n_features = 200
 
-            encoder = LabelEncoder()
-            isolate_column = dataset[0].columns[0]
-            dataset[0][isolate_column] = encoder.fit_transform(dataset[0]
-                                                            [isolate_column])
             if self.fs_estimator == "SVC": 
                 print("Estimator: Suport Vector Classifier")    
                 estimator = SVC(kernel='linear', random_state=self.SEED)
@@ -262,15 +259,6 @@ class PredictPRinKP:
 
         if self.fs_method == "Select From Model" :
             print("Method: Select From Model")
-
-            encoder = LabelEncoder()
-            isolate_column = dataset[0].columns[0]
-            dataset[0][isolate_column] = encoder.fit_transform(dataset[0]
-                                                            [isolate_column])
-            
-            X_train, X_test, y_train, y_test = \
-            train_test_split(dataset[0].values,metadata[0].values.ravel(),test_size=0.25, random_state=self.SEED,
-                             stratify=metadata[0].values.ravel())
             
             if self.fs_estimator == "SVC": 
                 print("Estimator: Suport Vector Classifier")    
@@ -285,7 +273,6 @@ class PredictPRinKP:
             selector = SelectFromModel(estimator)
             selector.fit(dataset[0].values, metadata[0].values.ravel())
             selected_features= dataset[0].columns[(selector.get_support())]
-            dataset[0] = dataset[0].filter(selected_features)
 
         print("---- Completed feature selection ----")
         print('Number of features selected:', len(selected_features))
